@@ -1,32 +1,21 @@
 import pandas as pd
-from datetime import datetime
+from ETL.extract import Extractor
+from ETL.transform import Transformer   
+from viewer.viewer import Viewer
 
 def handle_pipeline():
-    dataframe = csv_reader()
-    holidays_expenses_dict = select_holidays_expenses(dataframe)
+    exctractor = Extractor(path=r"data/descarga.xls")
+    raw_dataframe = exctractor.extract_general_xls()    
+    transformer = Transformer(dataframe=raw_dataframe)
+    holidays_expenses = transformer.select_holidays_expenses()
+    ctw_wages = transformer.extract_wages()
 
-def csv_reader():
-    reader = pd.read_excel(r"C:\Users\barba\Adri_Work\Wallet_App\data\descarga.xls",skiprows=range(0, 6))
-    return reader 
+    whole_data = {"wages":ctw_wages,"holidays_expenses":holidays_expenses}
+    
+    viewer = Viewer(whole_data)
+    viewer.piechart_wages_holidays()
 
 
-def select_holidays_expenses(general_dataframe):
-    general_dataframe['Data Operação'] = pd.to_datetime(general_dataframe['Data Operação'], format='%d-%m-%Y')
-    holidays_expenses = {}
-    holidays = {"denamrk":["10/04/2024","17/04/2024"],
-                "spain":["09/03/2024","15/03/2024"]}
-    for country,time_span in holidays.items():
-        start_date = datetime.strptime(time_span[0], "%d/%m/%Y")
-        end_date = datetime.strptime(time_span[1], "%d/%m/%Y")
-        
-        expenses = general_dataframe[(general_dataframe['Data Operação'] >= start_date) & (general_dataframe['Data Operação'] <= end_date)]
-        
-        holidays_expenses[country] = sum(expenses["Montante( EUR )"])
-
-    ## Spain Fix Bokking
-    holidays_expenses["spain"] += -466.50
-
-    return holidays_expenses
     
 
 
