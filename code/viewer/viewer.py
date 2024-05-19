@@ -7,7 +7,8 @@ class Viewer:
         self.whole_data = whole_data
 
     def piechart_wages_holidays(self):
-        
+        """Pie chart generator for the holidays expenses
+        """
         wages = self.whole_data["wages"]
         holidays = self.whole_data["holidays_expenses"]
         print(wages,holidays)
