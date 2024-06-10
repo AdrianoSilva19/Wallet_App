@@ -5,6 +5,8 @@ class Transformer:
     def __init__(self, dataframe:pd.DataFrame):
         self.dataframe = dataframe
 
+    
+
     def select_holidays_expenses(self):
         columns = ['Data Operação', 'Montante( EUR )']
         self.dataframe[columns[0]] = pd.to_datetime(self.dataframe[columns[0]], format='%d-%m-%Y')
@@ -26,7 +28,13 @@ class Transformer:
     
     def extract_wages(self):
         wages_dict = {}
-        columns = ['Descrição', 'Montante( EUR )']
+        columns = ['Descrição', 'Montante( EUR )','Data Operação']
         wages = self.dataframe[self.dataframe[columns[0]].str.contains("Ordenado de")]
-        wages_dict["Ordenado de Critical Techworks, S.a."] = wages[columns[1]].sum()
+
+        for index, row in wages.iterrows():
+            date = datetime.strptime(row['Data valor'], '%d-%m-%Y')
+          
+            wages_dict[row["Data valor"]] = row['Montante( EUR )']
+            print(wages_dict)
+
         return wages_dict

@@ -10,10 +10,9 @@ def handle_pipeline():
     holidays_expenses = transformer.select_holidays_expenses()
     ctw_wages = transformer.extract_wages()
 
-    whole_data = {"wages":ctw_wages,"holidays_expenses":holidays_expenses}
-    
-    viewer = Viewer(whole_data)
-    viewer.piechart_wages_holidays()
+    whole_data = {"wages":ctw_wages,"holidays_expenses":holidays_expenses} 
+    #viewer = Viewer(whole_data)
+    #viewer.piechart_holidays()
 
 
     
