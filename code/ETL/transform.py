@@ -7,6 +7,7 @@ class Transformer:
         self.month_balance = {}
 
 
+
     def handler(self):
         holiday_expenses = self.select_holidays_expenses(self.dataframe)
         ctw_wages = self.extract_wages(self.dataframe)
@@ -18,6 +19,7 @@ class Transformer:
     
     @staticmethod
     def select_holidays_expenses(dataframe=None):
+
         columns = ['Data Operação', 'Montante( EUR )']
         dataframe[columns[0]] = pd.to_datetime(dataframe[columns[0]], format='%d-%m-%Y')
         holidays_expenses = {}

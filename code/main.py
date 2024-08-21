@@ -7,10 +7,12 @@ def handle_pipeline():
     exctractor = Extractor(path=r"data/descarga.xls")
     raw_dataframe = exctractor.extract_general_xls()    
     transformer = Transformer(dataframe=raw_dataframe)
+
     transformed_data = transformer.handler()
     viewer = Viewer(transformed_data)
     viewer.barplot_monthly_balance()
     viewer.barplot_general()
+
 
 
     

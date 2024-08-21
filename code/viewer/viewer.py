@@ -73,6 +73,7 @@ class Viewer:
 
         # Show the plot
         plt.tight_layout()
+
         plt.show()
 
 
