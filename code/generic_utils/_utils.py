@@ -15,6 +15,6 @@ def logging_decorator_factory(severity,message,exception=TypeError,service=None)
                             f"Severity: {severity} \n"
                             f"Message: {message} \n"
                             f"Exception: {exception}\n"
-                            f"Service name: {service}")               
+                            f"Service name: {service}\n")               
         return new_function
     return logger_decorator
