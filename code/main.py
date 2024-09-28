@@ -19,6 +19,7 @@ def handle_pipeline():
         transformer = Transformer(dataframe=raw_dataframe)
 
         transformed_data = transformer.handler()
+        print(transformed_data)
         viewer = Viewer(transformed_data)
         viewer.barplot_monthly_balance()
         viewer.barplot_general()
