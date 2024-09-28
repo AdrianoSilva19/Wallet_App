@@ -27,9 +27,11 @@ class Transformer:
         holiday_expenses = self.select_holidays_expenses(self.dataframe)
         ctw_wages = self.extract_wages(self.dataframe)
         house_expenses = self.extract_house_expenses(self.dataframe)
+        fuel_expenses = self.extract_fuel_expenses(self.dataframe)
         self.month_balance["ctw_wages"] = ctw_wages
         self.month_balance["holiday_expenses"] = holiday_expenses
         self.month_balance["house_expenses"] = house_expenses
+        self.month_balance["fuel_expenses"] = fuel_expenses
         return self.month_balance
     
     @staticmethod
@@ -102,3 +104,16 @@ class Transformer:
         house_expenses_dict = house_expenses_by_month.to_dict()
         return house_expenses_dict
 
+    @staticmethod
+    def extract_fuel_expenses(dataframe:pd.DataFrame=None,pattern_to_search:str=None)->dict:
+        """Method that extracts the fuel expenses from the dataframe and returns a dictionary with the sum of the fuel expenses by month.
+
+        Returns:
+            dict: dictionary with the sum of the fuel expenses by month
+        """
+        columns = ['Descrição', 'Montante( EUR )']
+        fuel_expenses = dataframe[dataframe[columns[0]].str.contains("Bp Ponte|E Leclerc|Inter Vila Do Prado", na=False)]
+        
+        fuel_expenses_by_month = fuel_expenses.groupby(fuel_expenses['Date'].dt.strftime('%B'))[columns[1]].sum()
+        fuel_expenses_dict = fuel_expenses_by_month.to_dict()
+        return fuel_expenses_dict
