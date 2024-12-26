@@ -3,7 +3,7 @@ from datetime import datetime
 try:
     from generic_utils._utils import logging_decorator_factory
 except ImportError:
-    from code.generic_utils._utils import logging_decorator_factory
+    from app.code.generic_utils._utils import logging_decorator_factory
 class Transformer:
     """This class is responsible for transforming the data extracted from the raw dataframe
     """
@@ -62,10 +62,24 @@ class Transformer:
 
         ## Spain Fix Bokking
         holidays_expenses[2024]["holidays"][start_date.strftime("%B")] += -466.50
-        return holidays_expenses
+        
+        data = [(year, month, expense) 
+            for year, expenses in holidays_expenses.items() 
+            for month, expense in expenses['holidays'].items()]
+        df = pd.DataFrame(data, columns=['Year', 'Month', 'Expenses'])
+        city_map = {
+            'April': 'Copenhagen',
+            'March': 'Madrid',
+            'June': 'Geres'
+        }
+
+        # Add a new 'City' column to the DataFrame
+        df['City'] = df['Month'].map(city_map)
+
+        return df.to_dict('records')
     
     @staticmethod
-    def extract_wages(dataframe:pd.DataFrame=None,pattern_to_search:str=None)->dict:
+    def extract_wages(dataframe:pd.DataFrame=None,pattern_to_search:str=None)->list:
         """Method that extracts the wages from the dataframe and returns a dictionary with the sum of the wages by month.
         The entity that provides the wages is passed as a pattern_to_search to filter the wages.
 
@@ -78,13 +92,19 @@ class Transformer:
         # Convert the dataframe's date column to datetime format
         dataframe['Date'] = pd.to_datetime(dataframe['Data valor'], format="%d-%m-%Y")
         columns = ['Descrição', 'Montante( EUR )']
+        dataframe['Company'] = "Critical Techworks"
         wages = dataframe[dataframe[columns[0]].str.contains("Ordenado de")]
+       
         wages_year_month = wages.groupby([wages['Date'].dt.year.rename('year'), 
-                   wages['Date'].dt.month_name().rename('month')])['Montante( EUR )'].sum().reset_index()
+                   wages['Date'].dt.month_name().rename('month'),wages['Company']])['Montante( EUR )'].sum().reset_index()
+        
+
         wages_year_month.set_index(['year', 'month'], inplace=True)
         wages_year_month.rename({columns[1]: 'wages'}, axis=1, inplace=True)
-        wages_dict = {year: wages_year_month.loc[year].to_dict() for year in wages_year_month.index.get_level_values(0).unique()}
-        return wages_dict
+        wages_year_month.reset_index(inplace=True)
+            
+        
+        return wages_year_month.to_dict('records')
     
     @staticmethod
     def extract_house_expenses(dataframe:pd.DataFrame=None,pattern_to_search:str=None)->dict:
@@ -99,14 +119,22 @@ class Transformer:
         Returns:
             dict: _description_
         """
+        dataframe['Date'] = pd.to_datetime(dataframe['Data valor'], format="%d-%m-%Y")
         columns = ['Descrição', 'Montante( EUR )']
         house_expenses = dataframe[dataframe[columns[0]].str.contains("Renda|Americo", na=False)]
         house_expenses_year_month = house_expenses.groupby([house_expenses['Date'].dt.year.rename('year'), 
                    house_expenses['Date'].dt.month_name().rename('month')])['Montante( EUR )'].sum().reset_index()
         house_expenses_year_month.set_index(['year', 'month'], inplace=True)
-        house_expenses_year_month.rename({columns[1]: 'house_expenses'}, axis=1, inplace=True)
-        house_expenses_dict = {year: house_expenses_year_month.loc[year].to_dict() for year in house_expenses_year_month.index.get_level_values(0).unique()}
-        return house_expenses_dict
+        house_expenses_year_month.rename({columns[1]: 'rent'}, axis=1, inplace=True)
+        for x,row in house_expenses_year_month.iterrows():
+            if -400 > float(row['rent']) > -500:
+                house_expenses_year_month.at[x, 'general_expenses'] = round(house_expenses_year_month.at[x, 'rent'] + 400, 2)
+                house_expenses_year_month.at[x, 'rent'] = -400
+            else:
+                house_expenses_year_month.at[x, 'general_expenses'] = 0
+        
+        house_expenses_year_month.reset_index(inplace=True)
+        return house_expenses_year_month.to_dict('records')
 
     @staticmethod
     def extract_fuel_expenses(dataframe:pd.DataFrame=None,pattern_to_search:str=None)->dict:
@@ -115,6 +143,7 @@ class Transformer:
         Returns:
             dict: dictionary with the sum of the fuel expenses by month
         """
+        dataframe['Date'] = pd.to_datetime(dataframe['Data valor'], format="%d-%m-%Y")
         columns = ['Descrição', 'Montante( EUR )']
         fuel_expenses = dataframe[dataframe[columns[0]].str.contains("Bp Ponte|E Leclerc|Inter Vila Do Prado", na=False)]
         fuel_expenses_year_month = fuel_expenses.groupby([fuel_expenses['Date'].dt.year.rename('year'), 
@@ -131,11 +160,14 @@ class Transformer:
         Returns:
             dict: dictionary with the sum of the expenses by month
         """
+        dataframe['Date'] = pd.to_datetime(dataframe['Data valor'], format="%d-%m-%Y")
         columns = ['Descrição', 'Montante( EUR )']
         beverages_and_food = dataframe[dataframe[columns[0]].str.contains("Gertal|Pingo Doce|Vending|Mikado|Cervejaria|Pelle|Ramen|Continente|Cozinha", na=False)]
         beverages_and_food_year_month = beverages_and_food.groupby([beverages_and_food['Date'].dt.year.rename('year'), 
-                   beverages_and_food['Date'].dt.month_name().rename('month')])['Montante( EUR )'].sum().reset_index()
+                   beverages_and_food['Date'].dt.month_name().rename('month'),beverages_and_food['Descrição'].rename('place')])['Montante( EUR )'].sum().reset_index()
         beverages_and_food_year_month.set_index(['year', 'month'], inplace=True)
         beverages_and_food_year_month.rename({columns[1]: 'beverages_and_food'}, axis=1, inplace=True)
-        beverages_and_food_dict = {year: beverages_and_food_year_month.loc[year].to_dict() for year in beverages_and_food_year_month.index.get_level_values(0).unique()}
-        return beverages_and_food_dict
+        
+        
+        beverages_and_food_year_month.reset_index(inplace=True)
+        return beverages_and_food_year_month.to_dict('records')

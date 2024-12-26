@@ -4,7 +4,7 @@ import pandas as pd
 try:
     from generic_utils._utils import logging_decorator_factory
 except ImportError:
-    from code.generic_utils._utils import logging_decorator_factory
+    from app.code.generic_utils._utils import logging_decorator_factory
 
 class Extractor:
     def __init__(self, path:str):
