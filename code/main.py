@@ -21,9 +21,9 @@ def handle_pipeline():
         transformed_data = transformer.handler()
         print(transformed_data)
 
-        # viewer = Viewer(transformed_data)
-        # viewer.barplot_monthly_balance()
-        # viewer.barplot_general()
+        viewer = Viewer(transformed_data)
+        viewer.barplot_monthly_balance()
+        viewer.barplot_general()
     except Exception as e:
         raise e
 

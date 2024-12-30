@@ -5,9 +5,9 @@ import numpy as np
 class Viewer:
 
     def __init__(self, whole_data):
-        self.whole_data = whole_data
-        self.holidays = self.whole_data.get("holiday_expenses", {})
-        self.wages = self.whole_data.get("ctw_wages", {})
+        self.whole_data = whole_data[2024]
+        self.holidays = self.whole_data.get("holidays", {})
+        self.wages = self.whole_data.get("wages", {})
         self.house_expenses = self.whole_data.get("house_expenses", {})
         self.fuel_expenses = self.whole_data.get("fuel_expenses", {})
         self.beverages_and_food = self.whole_data.get("beverages_and_food", {})
@@ -17,7 +17,6 @@ class Viewer:
         
         # Combine keys (months) from both dictionaries and sort them
         months = sorted(self.wages.keys() | self.holidays.keys()| self.house_expenses.keys() | self.fuel_expenses.keys() | self.beverages_and_food.keys())
-        
         # Create lists of values for wages and holidays
         wage_values = [self.wages.get(month, 0) for month in months]
         holiday_values = [self.holidays.get(month, 0) for month in months]
