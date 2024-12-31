@@ -1,9 +1,8 @@
-import sys
 import pandas as pd
 
 try:
-    from .ETL.extract import Extractor
-    from .ETL.transform import Transformer
+    from ETL.extract import Extractor
+    from ETL.transform import Transformer
 
 except ImportError:
     from app.code.ETL.extract import Extractor
@@ -13,7 +12,7 @@ except ImportError:
 
 def handle_pipeline():
     try:
-        exctractor = Extractor(path="app/data/descarga.xls")
+        exctractor = Extractor(path="data/descarga.xls")
         raw_dataframe = exctractor.extract_general_xls()
         transformer = Transformer(dataframe=raw_dataframe)
 

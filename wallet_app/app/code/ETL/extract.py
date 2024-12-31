@@ -13,7 +13,9 @@ class Extractor:
     @logging_decorator_factory("High","Path should be str",ValueError,service="Extractor")
     def extract_general_xls(self):
         try:
+            print(self.path)
             raw_dataframe = pd.read_excel(self.path,skiprows=range(0, 6))
+            print(raw_dataframe.head())
             return raw_dataframe 
         except ValueError as e:
             raise e    

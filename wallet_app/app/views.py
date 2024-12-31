@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.decorators import api_view
-from .code.main import handle_pipeline
+from .main import handle_pipeline
 from .code.ETL.transform import Transformer
 from .code.ETL.extract import Extractor
 from django.views import View
