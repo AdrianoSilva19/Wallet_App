@@ -29,7 +29,6 @@ class Transformer:
         ctw_wages = self.extract_wages(self.dataframe)
         house_expenses = self.extract_house_expenses(self.dataframe)
         fuel_expenses = self.extract_fuel_expenses(self.dataframe)
-        print(fuel_expenses)
         beverages_and_food = self.extract_beverages_and_food(self.dataframe)
         self.month_balance = {k: {**ctw_wages[k], **fuel_expenses[k], **house_expenses[k],**beverages_and_food[k], **holiday_expenses.get(k, {})} for k in ctw_wages.keys() 
                               | fuel_expenses.keys() | house_expenses.keys() | beverages_and_food.keys() | holiday_expenses.keys()}

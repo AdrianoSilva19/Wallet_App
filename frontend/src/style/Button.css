@@ -1,0 +1,13 @@
+.button {
+    position: inherit;
+    background-color: #ffffff;
+    border: none;
+    margin-bottom: 0.5rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.7s; /* Ensure transition is applied to background-color */
+}
+
+.button:hover {
+    background-color: #c277a6;
+}
